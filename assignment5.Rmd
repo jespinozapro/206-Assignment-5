@@ -1,0 +1,29 @@
+---
+title: "assignment 5"
+author: "Kyle Monper"
+date: "November 26, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r, include=FALSE}
+#load packages
+library(tidyverse)
+```
+
+```{r, include=FALSE}
+#load files
+
+faculty_salary <- read_csv("Faculty_salary.csv")
+enrollment <- read_csv("grad_enrollment.csv")
+phd_field <- read_csv("phd_by_field.csv")
+phd_salary <- read_csv("phd_median_salary.csv")
+
+
+```
+
