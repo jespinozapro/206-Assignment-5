@@ -35,20 +35,33 @@ enrollment_graph <- ggplot(enrollment, aes(x = Year)) +
   geom_line(aes(y = females), color = "blue")
 enrollment_graph
 
-
+#next step: what kind of stats to perform?
 
 
 ```
 
 
-```{r}
+```{r, fig.width=11}
 #part 2 Shifts in female PhD recipients by field (1985, 2000, and 2015).
 
 female_recieve <- phd_field %>% 
-  filter(sex == "female",
-         year == "1985",
-         year == "2000",
-         year == "2015") # need to update these lines
+  filter(year %in% c("1985", "2000", "2015"),
+         sex == "female",
+         field %in% c("Physical sciences and earth sciences", "Engineering", "Education", "Humanities and arts")) %>% 
+  select(1:4)
+
+female_col <- ggplot(female_recieve, aes(field, number, fill = factor(year))) +
+  geom_bar(stat="identity", position="dodge")
+female_col
+
+```
+
+```{r}
+#PART 3 Male and female salaries for starting postdoctoral and other employment positions (2015).
+#Compare median salaries for male and female doctorate recipients in 2015. Answer these two questions:
+#Does median salary differ significantly between male and female starting postdoc positions? 
+#Does median salary differ significantly between male and female PhD recipients in non-postdoc employment positions?
+
 
 
 
