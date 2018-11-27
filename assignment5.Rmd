@@ -27,3 +27,31 @@ phd_salary <- read_csv("phd_median_salary.csv")
 
 ```
 
+```{r}
+#part 1
+
+enrollment_graph <- ggplot(enrollment, aes(x = Year)) +
+  geom_line(aes(y = males)) +
+  geom_line(aes(y = females), color = "blue")
+enrollment_graph
+
+
+
+
+```
+
+
+```{r}
+#part 2 Shifts in female PhD recipients by field (1985, 2000, and 2015).
+
+female_recieve <- phd_field %>% 
+  filter(sex == "female",
+         year == "1985",
+         year == "2000",
+         year == "2015") # need to update these lines
+
+
+
+
+```
+
