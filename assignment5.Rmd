@@ -58,7 +58,9 @@ female_recieve <- phd_field %>%
   select(1:4)
 
 female_col <- ggplot(female_recieve, aes(field, number, fill = factor(year))) +
-  geom_bar(stat="identity", position="dodge")
+  geom_bar(stat="identity", position="dodge") +
+  theme_classic() +
+  scale_y_continuous(expand = c(0,0), limit = c(0, 5000))
 female_col
 
 
