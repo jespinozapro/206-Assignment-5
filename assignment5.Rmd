@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, include=FALSE}
 #load packages
 library(tidyverse)
+library(effsize)
+library(gridExtra)
 ```
 
 ```{r, include=FALSE}
@@ -93,18 +95,49 @@ female_chi <- chisq.test(female_matrix)
 ```{r}
 #PART 3 (Graph)
 
-phd_salary_box <- ggplot(phd_salary, aes(sex, postdoc)) +
-  geom_boxplot()
+postdoc_salary_box <- ggplot(phd_salary, aes(sex, postdoc)) +
+  geom_boxplot()+
+  theme_classic()+
+  xlab("Salary")+
+  ylab("Gender")+
+  ggtitle("Starting Salaries for Male and Female Postdocs")+
+  scale_y_continuous(expand = c(0,0), limit = c(2500,125000))
 
 employ_salary_box <- ggplot(phd_salary, aes(sex, employment)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()+
+  xlab("Salary")+
+  ylab("Gender")+
+  ggtitle("Starting Salaries for Male and Female pHDs Entering Workforce")+
+  scale_y_continuous(expand = c(0,0), limit = c(2500,125000))
+
 
 
 ```
 
 
 ```{r}
-#part 3 (stats) man-witney U
+#part 3 (stats) mann-whitney U
+
+#Mann-whitney U - salary btwn m/f starting postdoc positions
+
+#Step 1: perform test
+wilcox.test(postdoc ~ sex, data = phd_salary)
+#p = 0.867
+#Step 2: Cliff's Delta as effect size
+postdoc_cd <- cliff.delta(phd_salary$postdoc, phd_salary$sex)
+postdoc_cd
+#Cliff's delta = -0.04, negligible 
+
+#Mann-whitney U - salary btwn m/f not postdocs
+
+#Step 1: perfrorm test
+wilcox.test(employment ~ sex, data = phd_salary)
+#p = 0.329
+#Step 2: Cliff's Delta as effect size
+employment_cd <- cliff.delta(phd_salary$employment, phd_salary$sex)
+employment_cd
+#Cliff's Delta = -0.213, small
 
 
 
