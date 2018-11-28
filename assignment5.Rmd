@@ -29,10 +29,17 @@ phd_salary <- read_csv("phd_median_salary.csv")
 
 ```{r}
 #part 1
+enrollment <- enrollment %>% 
+  mutate(male_enroll = males/1000, female_enroll = females/1000)
+
 
 enrollment_graph <- ggplot(enrollment, aes(x = Year)) +
-  geom_line(aes(y = males)) +
-  geom_line(aes(y = females), color = "blue")
+  geom_line(aes(y = male_enroll)) +
+  geom_line(aes(y = female_enroll), color = "blue") +
+  theme_classic() +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(x = "Year", y = "\n Enrollment  (in thousands) \n")
 enrollment_graph
 
 #next step: what kind of stats to perform?
@@ -42,7 +49,7 @@ enrollment_graph
 
 
 ```{r, fig.width=11}
-#part 2 Shifts in female PhD recipients by field (1985, 2000, and 2015).
+#part 2 (figure) Shifts in female PhD recipients by field (1985, 2000, and 2015).
 
 female_recieve <- phd_field %>% 
   filter(year %in% c("1985", "2000", "2015"),
@@ -54,17 +61,115 @@ female_col <- ggplot(female_recieve, aes(field, number, fill = factor(year))) +
   geom_bar(stat="identity", position="dodge")
 female_col
 
+
+
+
 ```
+
 
 ```{r}
-#PART 3 Male and female salaries for starting postdoctoral and other employment positions (2015).
-#Compare median salaries for male and female doctorate recipients in 2015. Answer these two questions:
-#Does median salary differ significantly between male and female starting postdoc positions? 
-#Does median salary differ significantly between male and female PhD recipients in non-postdoc employment positions?
+#Part 2 (stats) - chi square test: year vs field
+
+female_field <- female_recieve %>% 
+  select(-sex) %>% 
+  spread(year, number)
+
+female_matrix <- female_field %>% 
+  select(-field)
+
+female_prop <- prop.table(as.matrix(female_matrix), 1)
+
+female_chi <- chisq.test(female_matrix)
 
 
+```
+
+
+
+
+
+```{r}
+#PART 3 (Graph)
+
+phd_salary_box <- ggplot(phd_salary, aes(sex, postdoc)) +
+  geom_boxplot()
+
+employ_salary_box <- ggplot(phd_salary, aes(sex, employment)) +
+  geom_boxplot()
+
+
+```
+
+
+```{r}
+#part 3 (stats) man-witney U
 
 
 
 ```
+
+
+
+
+
+```{r, include = FALSE}
+#part 4 - build model
+
+salary_lm <- lm(salary ~ sex + discipline + years_phd + years_faculty + rank, data = faculty_salary)
+summary(salary_lm)
+##R52 = .44
+
+
+salary_lm2 <- lm(salary ~ sex + discipline + years_faculty + rank, data = faculty_salary)
+summary(salary_lm2)
+#R^2 = .44
+#all significant besides sex - not AS significant as lm3
+
+salary_lm3 <- lm(salary ~ sex + discipline + rank, data = faculty_salary)
+summary(salary_lm3)
+#R^2 = .44
+#all VERY significant but sex
+
+lm1_aic <- AIC(salary_lm)
+#9093
+lm2_aic <- AIC(salary_lm2)
+#9096
+lm3_aic <- AIC(salary_lm3)
+#9095
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
