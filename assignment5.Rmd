@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 #load packages
 library(tidyverse)
 library(effsize)
-library(gridExtra)
+library(car)
+
 ```
 
 ```{r, include=FALSE}
@@ -36,8 +37,8 @@ enrollment <- enrollment %>%
 
 
 enrollment_graph <- ggplot(enrollment, aes(x = Year)) +
-  geom_line(aes(y = male_enroll)) +
-  geom_line(aes(y = female_enroll), color = "blue") +
+  geom_point(aes(y = male_enroll)) +
+  geom_point(aes(y = female_enroll), color = "blue") +
   theme_classic() +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0)) +
@@ -45,7 +46,10 @@ enrollment_graph <- ggplot(enrollment, aes(x = Year)) +
 enrollment_graph
 
 #next step: what kind of stats to perform?
+#I've heard that it's suppposed to be a regression: 
 
+female_lm <- lm(females ~ Year, data = enrollment)
+female_lm  
 
 ```
 
@@ -152,18 +156,38 @@ employment_cd
 
 salary_lm <- lm(salary ~ sex + discipline + years_phd + years_faculty + rank, data = faculty_salary)
 summary(salary_lm)
-##R52 = .44
+#R52 = .44
 
+#Checking assumptions
+plot(salary_lm)
+
+#Diagnostics 
+vif(salary_lm)
+#years phd VIF = 7.5
+
+#make new df with only continuous variables to check colinearity using pairs() and cor()
+fac_sal_cont <- faculty_salary %>% 
+  select(years_phd, years_faculty, salary)
+
+pairs(fac_sal_cont)
+cor(fac_sal_cont)
 
 salary_lm2 <- lm(salary ~ sex + discipline + years_faculty + rank, data = faculty_salary)
 summary(salary_lm2)
 #R^2 = .44
 #all significant besides sex - not AS significant as lm3
+plot(salary_lm2)
+vif(salary_lm2)
 
 salary_lm3 <- lm(salary ~ sex + discipline + rank, data = faculty_salary)
 summary(salary_lm3)
 #R^2 = .44
 #all VERY significant but sex
+plot(salary_lm3)
+vif(salary_lm3)
+
+salary_lm4 <- lm(salary ~ sex + discipline + years_faculty, data = faculty_salary)
+summary(salary_lm4)
 
 lm1_aic <- AIC(salary_lm)
 #9093
@@ -171,8 +195,10 @@ lm2_aic <- AIC(salary_lm2)
 #9096
 lm3_aic <- AIC(salary_lm3)
 #9095
+lm4_aic <- AIC(salary_lm4)
+#9257
 
-
+#Jenny recommendation: go with model 3 - get rid of years_phd since it had the highest VIF value (7.5) and also very correlated with years_faculty. Also get rid of years_faculty cause in model 2 people make $88 less for every year they've been faculty. Doesn't make sense. 
 ```
 
 
